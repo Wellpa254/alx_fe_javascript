@@ -8,27 +8,25 @@
 </head>
 <body>
   <h1>Dynamic Quote Generator</h1>
- HEAD
-  <div id="quoteDisplay"></div>
-  <button id="newQuote">Show New Quote</button>
-
 
   <!-- Quote Display Section -->
   <div id="quoteDisplay"></div>
   <button id="newQuote">Show New Quote</button>
 
   <!-- Add Quote Section -->
- 03c812b (Initial commit: Setup Dynamic Quote Generator)
   <div>
     <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
     <input id="newQuoteCategory" type="text" placeholder="Enter quote category" />
     <button id="addQuote">Add Quote</button>
   </div>
- HEAD
-  <script src="script.js"></script>
-</body>
-</html>
 
+  <!-- Filter Quotes Section -->
+  <div>
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter">
+      <option value="all">All Categories</option>
+    </select>
+  </div>
 
   <!-- Export and Import Section -->
   <div>
@@ -40,5 +38,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-03c812b (Initial commit: Setup Dynamic Quote Generator)
