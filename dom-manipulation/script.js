@@ -5,6 +5,8 @@ let quotes = loadQuotes() || [
   { text: "In the middle of every difficulty lies opportunity.", category: "Inspiration" },
 ];
 
+const API_URL = "https://jsonplaceholder.typicode.com/posts"; // Replace with your mock server URL
+
 // Get references to DOM elements
 const quoteDisplay = document.getElementById("quoteDisplay");
 const newQuoteBtn = document.getElementById("newQuote");
@@ -143,43 +145,42 @@ function loadLastFilter() {
 }
 
 /**
- * Exports the quotes array to a JSON file.
+ * Fetches quotes from the server and merges with local quotes.
  */
-function exportToJsonFile() {
-  const dataStr = JSON.stringify(quotes, null, 2);
-  const blob = new Blob([dataStr], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
+async function syncWithServer() {
+  try {
+    const response = await fetch(API_URL);
+    const serverQuotes = await response.json();
+    const formattedQuotes = serverQuotes.map((post) => ({
+      text: post.title,
+      category: "Server",
+    }));
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "quotes.json";
-  a.click();
-
-  URL.revokeObjectURL(url);
+    // Merge quotes and resolve conflicts
+    const mergedQuotes = resolveConflicts(quotes, formattedQuotes);
+    quotes = mergedQuotes;
+    saveQuotes();
+    populateCategories();
+    alert("Synced with server!");
+  } catch (error) {
+    console.error("Error syncing with server:", error);
+  }
 }
 
 /**
- * Imports quotes from a JSON file and updates local storage.
- * @param {Event} event The file input change event.
+ * Resolves conflicts between local and server quotes.
+ * @param {Array} localQuotes
+ * @param {Array} serverQuotes
+ * @returns {Array} Merged quotes
  */
-function importFromJsonFile(event) {
-  const fileReader = new FileReader();
-  fileReader.onload = function (event) {
-    try {
-      const importedQuotes = JSON.parse(event.target.result);
-      if (Array.isArray(importedQuotes)) {
-        quotes.push(...importedQuotes);
-        saveQuotes();
-        populateCategories();
-        alert("Quotes imported successfully!");
-      } else {
-        alert("Invalid JSON file format.");
-      }
-    } catch (error) {
-      alert("Error reading JSON file.");
+function resolveConflicts(localQuotes, serverQuotes) {
+  const mergedQuotes = [...serverQuotes];
+  localQuotes.forEach((localQuote) => {
+    if (!serverQuotes.some((quote) => quote.text === localQuote.text)) {
+      mergedQuotes.push(localQuote);
     }
-  };
-  fileReader.readAsText(event.target.files[0]);
+  });
+  return mergedQuotes;
 }
 
 // Attach event listeners and initialize
@@ -205,3 +206,6 @@ populateCategories();
 loadLastFilter();
 loadLastViewedQuote() || showRandomQuote();
 createAddQuoteForm();
+
+// Periodic server sync
+setInterval(syncWithServer, 300000); // Sync every 5 minutes
