@@ -41,7 +41,7 @@ async function fetchQuotesFromServer() {
     saveQuotes();
     populateCategories();
     filterQuotes();
-    notifyUser("Quotes synced with server ✔︎");
+    notifyUser("Quotes synced with server!"); // ✅ Updated
   } catch (err) {
     console.error("Failed to fetch quotes:", err);
     notifyUser("❌ Could not sync with server", true);
@@ -202,9 +202,9 @@ function createAddQuoteForm() {
   container.append(inputText, inputCat, btn);
   document.body.appendChild(container);
 }
+
 /**
  * syncQuotes - Wrapper function required by the checker
- * Combines fetching from server, conflict resolution, and saving.
  */
 async function syncQuotes() {
   try {
@@ -221,13 +221,12 @@ async function syncQuotes() {
     saveQuotes();
     populateCategories();
     filterQuotes();
-    notifyUser("Quotes synced via syncQuotes ✔︎");
+    notifyUser("Quotes synced with server!"); // ✅ Updated
   } catch (err) {
     console.error("syncQuotes failed:", err);
     notifyUser("❌ syncQuotes failed", true);
   }
 }
-
 
 // ------------------------------------------------------------
 // 7. ───  EXTRA BUTTON TO MANUALLY SYNC  ─────────────────────
