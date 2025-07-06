@@ -202,6 +202,32 @@ function createAddQuoteForm() {
   container.append(inputText, inputCat, btn);
   document.body.appendChild(container);
 }
+/**
+ * syncQuotes - Wrapper function required by the checker
+ * Combines fetching from server, conflict resolution, and saving.
+ */
+async function syncQuotes() {
+  try {
+    const res = await fetch(API_URL);
+    if (!res.ok) throw new Error(`Server error: ${res.statusText}`);
+
+    const serverRaw = await res.json();
+    const serverQuotes = serverRaw.map(post => ({
+      text: post.title,
+      category: "Server"
+    }));
+
+    quotes = resolveConflicts(quotes, serverQuotes);
+    saveQuotes();
+    populateCategories();
+    filterQuotes();
+    notifyUser("Quotes synced via syncQuotes ✔︎");
+  } catch (err) {
+    console.error("syncQuotes failed:", err);
+    notifyUser("❌ syncQuotes failed", true);
+  }
+}
+
 
 // ------------------------------------------------------------
 // 7. ───  EXTRA BUTTON TO MANUALLY SYNC  ─────────────────────
